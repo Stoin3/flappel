@@ -22,7 +22,7 @@ stijnbarendse.nl/
 └── game/       ← kopie van de map game/
 ```
 
-- Het keuzescherm linkt naar `../appel` en `../flappel`, en Flappel linkt met **🎮 Alle games** terug naar `../game` (`hubUrl` in `flappel/js/config.js`).
+- Het keuzescherm linkt nar `../appel` en `../flappel`, en Flappel linkt met **🎮 Alle games** terug naar `../game` (`hubUrl` in `flappel/js/config.js`).
 - Werkt ook als het adres zonder `/` aan het eind wordt geopend (`stijnbarendse.nl/flappel`): een klein scriptje bovenin de pagina zet dan de basis van de paden goed.
 - Lokaal proberen: open `index.html` in deze map (stuurt door naar het keuzescherm), of `flappel/index.html` direct.
 - Link-previews (WhatsApp, Discord): `flappel/og-flappel.jpg` en `game/img/og-game.jpg`. De `og:`-tags gebruiken absolute adressen op `https://stijnbarendse.nl/…`; pas die aan als de games ergens anders komen te staan.
