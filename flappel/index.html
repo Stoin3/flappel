@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<script>
+// Zonder slash aan het eind (stijnbarendse.nl/flappel) zouden css/ en js/ op de verkeerde plek gezocht worden: zet de basis goed.
+(function (p) { if (location.protocol !== 'file:' && !/\/$/.test(p) && !/\.[a-z0-9]+$/i.test(p)) { var b = document.createElement('base'); b.href = p + '/'; document.head.appendChild(b); } })(location.pathname);
+</script>
+<title>Flappel 🍎 · fladder door de kiwibuizen</title>
+<meta name="description" content="Flappel: fladder als appel tussen de kiwibuizen door. Elf wisselende stijlen, power-ups, upgrades en skins. Eén account met Andy Apples.">
+<meta name="theme-color" content="#ff2d6f">
+<meta property="og:title" content="Flappel 🍎">
+<meta property="og:description" content="Fladder als appel tussen de kiwibuizen door! Hoe ver kom jij?">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stijnbarendse.nl/flappel">
+<meta property="og:image" content="https://stijnbarendse.nl/flappel/og-flappel.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap">
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="ui">
+  <button id="btnPause" class="iconbtn hidden" aria-label="Pauze">❚❚</button>
+
+  <!-- ===== Hoofdmenu ===== -->
+  <section id="scrMenu" class="screen active">
+    <div class="topbar">
+      <a id="hubLink" class="pill" href="../game">🎮 Alle games</a>
+      <div class="toggles">
+        <button id="btnSound" class="iconbtn" aria-label="Geluid">🔊</button>
+        <button id="btnMusic" class="iconbtn" aria-label="Muziek">🎵</button>
+        <button id="btnCalm" class="iconbtn" aria-label="Rustige effecten" title="Rustige effecten (minder flitsen en schudden)">✨</button>
+      </div>
+    </div>
+    <div class="menu-center">
+      <h1 class="logo" aria-label="Flappel"><span>F</span><span>L</span><span>A</span><span>P</span><span>P</span><span>E</span><span>L</span></h1>
+      <p class="tagline">Fladder als appel tussen de <b>kiwibuizen</b> door!</p>
+      <button id="btnPlay" class="btn big play">▶ SPELEN</button>
+      <div class="row">
+        <button id="btnShop" class="btn orange">🛒 Upgrades<span id="shopBadge" class="badge hidden">!</span></button>
+        <button id="btnSkins" class="btn purple">🎨 Skins</button>
+      </div>
+      <div class="row">
+        <button id="btnLb" class="btn blue">🏆 Ranglijst</button>
+        <button id="btnAccount" class="btn teal"><span id="mmAcc">👤 Account</span></button>
+      </div>
+      <div class="stats"><span>🏅 Record <b id="mBest">0</b></span><span><i class="pit"></i> <b id="mPitten">0</b></span></div>
+    </div>
+  </section>
+
+  <!-- ===== Game over ===== -->
+  <section id="scrOver" class="screen">
+    <div class="card over">
+      <h2 id="oTitle" class="wobble">SPLAT!</h2>
+      <div id="oNew" class="newrec hidden">🎉 NIEUW RECORD! 🎉</div>
+      <div class="scorebox">
+        <div class="medal" id="oMedal">🥉</div>
+        <div class="nums">
+          <div><small>SCORE</small><b id="oScore">0</b></div>
+          <div><small>RECORD</small><b id="oBest">0</b></div>
+        </div>
+      </div>
+      <div class="earn"><i class="pit"></i> +<b id="oPit">0</b> pitten <small id="oPitInfo"></small></div>
+      <button id="btnAgain" class="btn big play">↻ NOG EEN KEER</button>
+      <div class="row">
+        <button id="btnOverShop" class="btn orange">🛒 Upgrades<span id="shopBadge2" class="badge hidden">!</span></button>
+        <button id="btnOverMenu" class="btn blue">🏠 Menu</button>
+      </div>
+      <p id="oLb" class="msg"></p>
+    </div>
+  </section>
+
+  <!-- ===== Pauze ===== -->
+  <section id="scrPause" class="screen">
+    <div class="card">
+      <h2>⏸️ Pauze</h2>
+      <button id="btnResume" class="btn big play">▶ VERDER</button>
+      <div class="row">
+        <button id="btnPauseMenu" class="btn blue">🏠 Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Upgrades ===== -->
+  <section id="scrShop" class="screen">
+    <div class="card wide">
+      <h2>🛒 Upgrades</h2>
+      <p class="sub">Je hebt <i class="pit"></i> <b id="shopPit">0</b> pitten. Elke upgrade maakt het spel makkelijker!</p>
+      <div id="shopList" class="grid"></div>
+      <button id="btnShopBack" class="btn blue">← Terug</button>
+    </div>
+  </section>
+
+  <!-- ===== Skins ===== -->
+  <section id="scrSkins" class="screen">
+    <div class="card wide">
+      <h2>🎨 Skins</h2>
+      <p class="sub">Je hebt <i class="pit"></i> <b id="skinPit">0</b> pitten.</p>
+      <div id="skinList" class="grid skins"></div>
+      <button id="btnSkinsBack" class="btn blue">← Terug</button>
+    </div>
+  </section>
+
+  <!-- ===== Account (zelfde account als Andy Apples) ===== -->
+  <section id="scrAccount" class="screen">
+    <div class="card">
+      <h2>👤 Account</h2>
+      <p class="sub">Eén account voor <b>Flappel</b> én <b>Andy Apples</b>. Je voortgang wordt online bewaard.</p>
+      <div id="accOut">
+        <input id="accEmail" type="email" placeholder="E-mailadres" autocomplete="email">
+        <input id="accPass" type="password" placeholder="Wachtwoord (minstens 6 tekens)" autocomplete="current-password">
+        <div class="row">
+          <button id="btnAccLogin" class="btn teal">Inloggen</button>
+          <button id="btnAccSignup" class="btn purple">Account maken</button>
+        </div>
+      </div>
+      <div id="accIn" class="hidden">
+        <p>Ingelogd als <b id="accWho"></b></p>
+        <label class="lbl" for="accName">Gebruikersnaam</label>
+        <div class="row tight">
+          <input id="accName" maxlength="16" placeholder="Gebruikersnaam" autocomplete="nickname">
+          <button id="btnAccName" class="btn teal small">Opslaan</button>
+        </div>
+        <p id="accNameHint" class="hint"></p>
+        <p id="accSync" class="hint"></p>
+        <button id="btnAccLogout" class="btn red small">Uitloggen</button>
+      </div>
+      <p id="accMsg" class="msg"></p>
+      <button id="btnAccBack" class="btn blue">← Terug</button>
+    </div>
+  </section>
+
+  <!-- ===== Ranglijst ===== -->
+  <section id="scrLb" class="screen">
+    <div class="card">
+      <h2>🏆 Ranglijst</h2>
+      <p id="lbSub" class="sub"></p>
+      <ol id="lbList" class="lb"></ol>
+      <p id="lbMsg" class="msg"></p>
+      <div id="lbJoin" class="hidden"><p id="lbJoinTxt" class="hint"></p><button id="btnLbAcc" class="btn teal small">👤 Account</button></div>
+      <button id="btnLbBack" class="btn blue">← Terug</button>
+    </div>
+  </section>
+</div>
+
+<script src="js/config.js?v=1"></script>
+<script src="js/util.js?v=1"></script>
+<script src="js/data.js?v=1"></script>
+<script src="js/audio.js?v=1"></script>
+<script src="js/render-bg.js?v=1"></script>
+<script src="js/render-world.js?v=1"></script>
+<script src="js/game.js?v=1"></script>
+<script src="js/render.js?v=1"></script>
+<script src="js/online.js?v=1"></script>
+<script src="js/ui.js?v=1"></script>
+<script src="js/main.js?v=1"></script>
+</body>
+</html>

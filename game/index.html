@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+// Zonder slash aan het eind (stijnbarendse.nl/game) zouden plaatjes op de verkeerde plek gezocht worden: zet de basis goed.
+(function (p) { if (location.protocol !== 'file:' && !/\/$/.test(p) && !/\.[a-z0-9]+$/i.test(p)) { var b = document.createElement('base'); b.href = p + '/'; document.head.appendChild(b); } })(location.pathname);
+</script>
+<title>Kies je game · Andy Apples & Flappel</title>
+<meta name="description" content="Kies je game: slinger als Andy de gorilla door de jungle, of fladder als appel tussen de kiwibuizen door in Flappel.">
+<meta name="theme-color" content="#7a2bff">
+<meta property="og:title" content="Kies je game 🎮">
+<meta property="og:description" content="Andy Apples of Flappel? Twee fruitige games, één account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stijnbarendse.nl/game">
+<meta property="og:image" content="https://stijnbarendse.nl/game/img/og-game.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; min-height: 100%; }
+  body { font-family: 'Fredoka', system-ui, sans-serif; color: #fff; background: #1a0636; overflow-x: hidden; }
+  #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  main { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: max(28px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom)); gap: 26px; }
+
+  /* ---- titel ---- */
+  .title { margin: 0; font-family: 'Lilita One', system-ui; font-weight: 400; font-size: clamp(44px, 9vw, 96px); line-height: 1; text-align: center; letter-spacing: 1px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .28em; filter: drop-shadow(0 7px 0 rgba(30,0,60,.6)); }
+  .title .w { display: inline-flex; }
+  .title span { display: inline-block; -webkit-text-stroke: 4px #2a0640; paint-order: stroke fill; animation: bob 1.8s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-14px) rotate(4deg); } }
+  .sub { margin: 14px 0 0; font-size: clamp(16px, 2.6vw, 21px); font-weight: 600; text-align: center; text-shadow: 0 2px 0 #2a0640, 0 0 14px rgba(40,0,60,.7); }
+  .hello { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 99px; background: rgba(30,5,60,.55); border: 2px solid rgba(255,255,255,.35); font-size: 15px; }
+
+  /* ---- kaarten ---- */
+  .games { display: grid; grid-template-columns: repeat(2, minmax(0, 440px)); gap: clamp(18px, 3vw, 36px); width: 100%; justify-content: center; perspective: 1200px; }
+  .game { --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%; position: relative; display: flex; flex-direction: column; text-decoration: none; color: #fff; border-radius: 30px; overflow: hidden;
+    background: linear-gradient(165deg, var(--c1), var(--c2)); border: 4px solid rgba(255,255,255,.75);
+    box-shadow: 0 0 0 6px var(--ring), 0 22px 0 -6px var(--shadow), 0 30px 60px rgba(0,0,0,.45);
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0); transition: transform .25s cubic-bezier(.2,1.4,.4,1), box-shadow .25s; outline: none;
+    animation: float 4s ease-in-out infinite; }
+  .game.andy { --c1: #ff6a3d; --c2: #c2185b; --ring: rgba(255,120,60,.35); --shadow: #6b0d2e; }
+  .game.flappel { --c1: #36d17a; --c2: #1b7fd6; --ring: rgba(80,220,140,.35); --shadow: #0b3f6b; animation-delay: -2s; }
+  @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+  .game:hover, .game:focus-visible { box-shadow: 0 0 0 8px var(--ring), 0 26px 0 -6px var(--shadow), 0 40px 80px rgba(0,0,0,.55); }
+  .game:focus-visible { border-color: #ffe14d; }
+  .art { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #000; }
+  .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.12); transition: opacity .9s, transform 6s linear; }
+  .art img.on { opacity: 1; transform: scale(1.0); }
+  .art::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.4), rgba(255,255,255,0) 45%), linear-gradient(transparent 60%, rgba(0,0,0,.35)); mix-blend-mode: soft-light; }
+  .shine { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.55) 45%, transparent 60%); transform: translateX(-120%); }
+  .game:hover .shine, .game:focus-visible .shine { animation: shine 1.1s ease; }
+  @keyframes shine { to { transform: translateX(120%); } }
+  .badge { position: absolute; top: 14px; right: 14px; z-index: 2; font-family: 'Lilita One', system-ui; font-size: 18px; padding: 6px 13px; border-radius: 99px; color: #2a0640;
+    background: #ffe14d; box-shadow: 0 4px 0 #b37a00; transform: rotate(6deg); animation: wiggle 1.2s ease-in-out infinite; }
+  .badge.new { background: linear-gradient(90deg, #ff5ad8, #ffe14d, #6bff4d, #3dd8ff); background-size: 300% 100%; animation: wiggle 1.2s ease-in-out infinite, slide 3s linear infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(6deg) scale(1); } 50% { transform: rotate(-4deg) scale(1.1); } }
+  @keyframes slide { to { background-position: 300% 0; } }
+  .dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.45); transition: transform .3s, background .3s; }
+  .dots i.on { background: #fff; transform: scale(1.4); }
+  .body { padding: 16px 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .name { margin: 0; font-family: 'Lilita One', system-ui; font-weight: 400; font-size: clamp(34px, 5vw, 46px); line-height: 1; -webkit-text-stroke: 3px #2a0640; paint-order: stroke fill; text-shadow: 0 4px 0 rgba(0,0,0,.3); }
+  .desc { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.35; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips span { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.22); border: 1.5px solid rgba(255,255,255,.35); }
+  .rec { font-size: 15px; font-weight: 700; color: #ffe14d; min-height: 1.2em; margin: 0; }
+  .play { margin-top: auto; font-family: 'Lilita One', system-ui; font-size: 26px; text-align: center; padding: 13px 16px; border-radius: 20px; color: #fff;
+    background: linear-gradient(#7dff6b, #1fc95a); box-shadow: 0 7px 0 #0b7a3a, inset 0 3px 0 rgba(255,255,255,.5); text-shadow: 0 2px 0 rgba(0,0,0,.25); transition: transform .15s; }
+  .game:hover .play, .game:focus-visible .play { animation: pulse .7s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  .game.go { animation: none; transform: scale(1.08) !important; transition: transform .35s cubic-bezier(.2,1.6,.4,1); z-index: 5; }
+  #flash { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; background: radial-gradient(circle, #fff 0%, #ffe14d 40%, #ff5ad8 100%); transition: opacity .35s; }
+  #flash.on { opacity: 1; }
+  footer { font-size: 15px; font-weight: 600; text-align: center; opacity: .92; text-shadow: 0 2px 0 #2a0640; }
+  footer b { color: #b6ff4d; }
+  @media (max-width: 760px) {
+    .keys { display: none; }
+    .games { grid-template-columns: minmax(0, 460px); }
+    .game { animation: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .title span, .game, .badge, .game:hover .play { animation: none !important; }
+    .art img { transition: opacity .6s; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="flash"></div>
+<main>
+  <div>
+    <h1 class="title" aria-label="Kies je game!"></h1>
+    <p class="sub">Twee fruitige games. Eén account. <span id="hello"></span></p>
+  </div>
+  <div class="games">
+    <a class="game andy" href="../appel" data-key="1">
+      <div class="art" data-imgs="img/andy-1.jpg,img/andy-2.jpg,img/andy-3.jpg,img/andy-4.jpg"><div class="shine"></div><span class="badge">🔥 Populair</span><div class="dots"></div></div>
+      <div class="body">
+        <h2 class="name">Andy Apples</h2>
+        <p class="desc">Slinger als Andy de gorilla aan lianen door vijftien werelden en verzamel zoveel mogelijk appels!</p>
+        <div class="chips"><span>🦍 Slingeren</span><span>🗺️ Carrière</span><span>👥 Multiplayer</span><span>🏆 Ranglijst</span></div>
+        <p class="rec" id="recAndy"></p>
+        <div class="play">▶ SPEEL ANDY</div>
+      </div>
+    </a>
+    <a class="game flappel" href="../flappel" data-key="2">
+      <div class="art" data-imgs="img/flappel-1.jpg,img/flappel-2.jpg,img/flappel-3.jpg,img/flappel-4.jpg"><div class="shine"></div><span class="badge new">✨ NIEUW!</span><div class="dots"></div></div>
+      <div class="body">
+        <h2 class="name">Flappel</h2>
+        <p class="desc">Fladder als appel tussen de kiwibuizen door. De wereld wisselt steeds van stijl!</p>
+        <div class="chips"><span>🍎 Fladderen</span><span>🎨 11 stijlen</span><span>⭐ Power-ups</span><span>🛒 Upgrades</span></div>
+        <p class="rec" id="recFlappel"></p>
+        <div class="play">▶ SPEEL FLAPPEL</div>
+      </div>
+    </a>
+  </div>
+  <footer>👤 Eén account voor <b>alle games</b> <span class="keys">· of druk op <b>1</b> of <b>2</b></span></footer>
+</main>
+<script>
+'use strict';
+// ---- titel met springende, gekleurde letters ----
+(function () {
+  const cols = ['#ff3b3b', '#ff9a1f', '#ffe14d', '#6bff4d', '#3dd8ff', '#8a6bff', '#ff5ad8'];
+  let i = 0;
+  document.querySelector('.title').innerHTML = 'Kies je game!'.split(' ').map(w =>
+    '<span class="w">' + [...w].map(ch => `<span style="color:${cols[i % cols.length]};animation-delay:${(i++ * 0.09).toFixed(2)}s">${ch}</span>`).join('') + '</span>').join('');
+})();
+
+// ---- jouw records en of je bent ingelogd (zelfde domein = zelfde opslag als de games) ----
+(function () {
+  const get = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+  const a = get('andyApples.save.v1'), f = get('flappel.save.v1'), auth = get('andyApples.auth');
+  if (a && a.best > 0) document.getElementById('recAndy').textContent = `🏅 Jouw record: ${a.best} m`;
+  if (f && f.best > 0) document.getElementById('recFlappel').textContent = `🏅 Jouw record: ${f.best}`;
+  if (auth && auth.user) document.getElementById('hello').innerHTML = '<span class="hello">👋 Welkom terug! Je bent ingelogd.</span>';
+})();
+
+// ---- kaarten: wisselende plaatjes, 3D-kanteling en een flits bij het kiezen ----
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('.game').forEach((card, ci) => {
+  const art = card.querySelector('.art'), dots = card.querySelector('.dots');
+  const imgs = art.dataset.imgs.split(',').map((src, i) => {
+    const im = new Image(); im.src = src; im.alt = ''; im.decoding = 'async'; if (i === 0) im.className = 'on';
+    art.insertBefore(im, art.firstChild); dots.insertAdjacentHTML('beforeend', `<i class="${i ? '' : 'on'}"></i>`);
+    return im;
+  });
+  let cur = 0;
+  setTimeout(() => setInterval(() => {
+    imgs[cur].classList.remove('on'); dots.children[cur].classList.remove('on');
+    cur = (cur + 1) % imgs.length;
+    imgs[cur].classList.add('on'); dots.children[cur].classList.add('on');
+  }, 2600), ci * 1300);
+  if (!reduce) {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--ry', ((x - 0.5) * 14).toFixed(2) + 'deg');
+      card.style.setProperty('--rx', ((0.5 - y) * 10).toFixed(2) + 'deg');
+      card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+      card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    });
+    card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+  }
+  card.addEventListener('click', e => {
+    if (reduce || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault();
+    go(card);
+  });
+});
+// confetti uit de gekozen kaart (getekend op de achtergrond)
+const pops = [];
+function boom(card) {
+  const r = card.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  for (let i = 0; i < 90; i++) { const a = Math.random() * TAU, sp = 200 + Math.random() * 700; pops.push({ x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 200, c: `hsl(${Math.random() * 360},100%,60%)`, s: 4 + Math.random() * 6, r: Math.random() * TAU, life: 1 }); }
+}
+function go(card) {
+  card.classList.add('go');
+  boom(card);
+  document.getElementById('flash').classList.add('on');
+  setTimeout(() => { location.href = card.href; }, 380);
+}
+addEventListener('keydown', e => {
+  const c = document.querySelector(`.game[data-key="${e.key}"]`);
+  if (c) go(c);
+});
+// terug via de knop 'vorige' van de browser: niet blijven hangen in de flits
+addEventListener('pageshow', () => { document.getElementById('flash').classList.remove('on'); document.querySelectorAll('.game.go').forEach(c => c.classList.remove('go')); });
+
+// ---- achtergrond: zwevend fruit, sterretjes en een kleurverloop dat langzaam draait ----
+const cv = document.getElementById('bg'), g = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1, mx = 0.5, my = 0.5;
+function size() { DPR = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; }
+size(); addEventListener('resize', size);
+addEventListener('pointermove', e => { mx = e.clientX / W; my = e.clientY / H; });
+const TAU = Math.PI * 2;
+const parts = Array.from({ length: 34 }, (_, i) => ({ x: Math.random(), y: Math.random(), z: 0.3 + Math.random() * 0.9, k: i % 4, r: Math.random() * TAU, vr: (Math.random() - 0.5) * 1.2, ph: Math.random() * TAU }));
+const confetti = Array.from({ length: 50 }, () => ({ x: Math.random(), y: Math.random(), c: `hsl(${Math.random() * 360},95%,62%)`, s: 3 + Math.random() * 4, r: Math.random() * TAU, sp: 0.02 + Math.random() * 0.05 }));
+function apple(r, c) {
+  g.beginPath(); g.moveTo(0, -r * 0.62);
+  g.bezierCurveTo(r * 0.35, -r * 1.08, r * 1.15, -r * 0.88, r * 1.06, -r * 0.05);
+  g.bezierCurveTo(r, r * 0.72, r * 0.55, r * 1.06, r * 0.2, r * 0.98);
+  g.bezierCurveTo(0, r * 0.94, 0, r * 0.94, -r * 0.2, r * 0.98);
+  g.bezierCurveTo(-r * 0.55, r * 1.06, -r, r * 0.72, -r * 1.06, -r * 0.05);
+  g.bezierCurveTo(-r * 1.15, -r * 0.88, -r * 0.35, -r * 1.08, 0, -r * 0.62);
+  const gr = g.createRadialGradient(-r * 0.35, -r * 0.4, r * 0.1, 0, 0, r * 1.1); gr.addColorStop(0, '#fff'); gr.addColorStop(0.25, c); gr.addColorStop(1, '#7a0010');
+  g.fillStyle = gr; g.fill();
+  g.strokeStyle = '#5a3210'; g.lineWidth = r * 0.14; g.lineCap = 'round'; g.beginPath(); g.moveTo(0, -r * 0.6); g.lineTo(r * 0.15, -r * 1.1); g.stroke();
+  g.fillStyle = '#5fcf3a'; g.beginPath(); g.ellipse(r * 0.4, -r * 0.95, r * 0.3, r * 0.13, -0.5, 0, TAU); g.fill();
+}
+function kiwi(r) {
+  g.fillStyle = '#6b4423'; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+  const gr = g.createRadialGradient(0, 0, 1, 0, 0, r * 0.88); gr.addColorStop(0, '#f6ffd0'); gr.addColorStop(0.35, '#c8f05a'); gr.addColorStop(1, '#5a9a14');
+  g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r * 0.88, 0, TAU); g.fill();
+  g.fillStyle = '#fbfde8'; g.beginPath(); g.arc(0, 0, r * 0.22, 0, TAU); g.fill();
+  g.fillStyle = '#1a1208';
+  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; g.beginPath(); g.ellipse(Math.cos(a) * r * 0.45, Math.sin(a) * r * 0.45, r * 0.08, r * 0.04, a, 0, TAU); g.fill(); }
+}
+function star(r) { g.beginPath(); for (let i = 0; i < 10; i++) { const a = i / 10 * TAU - Math.PI / 2, rr = i % 2 ? r * 0.45 : r; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } g.fill(); }
+let last = performance.now();
+function frame(now) {
+  const t = now / 1000, dt = Math.min(0.05, (now - last) / 1000); last = now;
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const h = (t * 8) % 360;
+  const bg = g.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, `hsl(${h},75%,32%)`); bg.addColorStop(0.5, `hsl(${(h + 60) % 360},80%,26%)`); bg.addColorStop(1, `hsl(${(h + 140) % 360},75%,22%)`);
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  // draaiende lichtstralen
+  g.save(); g.translate(W / 2, H * 0.35); g.rotate(t * 0.08); g.fillStyle = 'rgba(255,255,255,0.05)';
+  for (let i = 0; i < 14; i++) { g.rotate(TAU / 14); g.beginPath(); g.moveTo(0, 0); g.lineTo(-90, -Math.max(W, H)); g.lineTo(90, -Math.max(W, H)); g.fill(); }
+  g.restore();
+  for (const c of confetti) {
+    if (!reduce) { c.y += c.sp * dt; c.r += dt * 3; } if (c.y > 1.05) { c.y = -0.05; c.x = Math.random(); }
+    g.save(); g.translate(c.x * W + Math.sin(t + c.r) * 10, c.y * H); g.rotate(c.r); g.scale(Math.cos(c.r * 2), 1);
+    g.fillStyle = c.c; g.globalAlpha = 0.7; g.fillRect(-c.s, -c.s / 2, c.s * 2, c.s); g.restore();
+  }
+  g.globalAlpha = 1;
+  for (const p of parts) {
+    if (!reduce) { p.y -= 0.018 * p.z * dt; p.r += p.vr * dt; }
+    if (p.y < -0.1) { p.y = 1.1; p.x = Math.random(); }
+    const x = p.x * W + (mx - 0.5) * -40 * p.z + Math.sin(t * 0.8 + p.ph) * 18, y = p.y * H + (my - 0.5) * -30 * p.z;
+    const r = 10 + p.z * 16;
+    g.save(); g.translate(x, y); g.rotate(p.r); g.globalAlpha = 0.35 + p.z * 0.5;
+    if (p.k === 0) apple(r, '#ff3b3b'); else if (p.k === 1) kiwi(r); else if (p.k === 2) apple(r, '#7ed321');
+    else { g.fillStyle = `hsl(${(t * 60 + p.ph * 50) % 360},100%,70%)`; star(r * 0.7); }
+    g.restore();
+  }
+  for (let i = pops.length - 1; i >= 0; i--) {
+    const p = pops[i]; p.life -= dt * 1.3; if (p.life <= 0) { pops.splice(i, 1); continue; }
+    p.vy += 900 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.r += dt * 8;
+    g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.globalAlpha = p.life; g.fillStyle = p.c; g.fillRect(-p.s, -p.s / 2, p.s * 2, p.s); g.restore();
+  }
+  g.globalAlpha = 1;
+  const v = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.75);
+  v.addColorStop(0, 'rgba(10,0,30,0)'); v.addColorStop(1, 'rgba(10,0,30,0.55)');
+  g.fillStyle = v; g.fillRect(0, 0, W, H);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
