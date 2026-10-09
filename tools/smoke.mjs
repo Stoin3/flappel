@@ -69,6 +69,8 @@ const ok = (c, msg) => { if (!c) errs.push('Mislukt: ' + msg); else console.log(
   await p.waitForTimeout(600);
   ok(await p.evaluate(() => [...document.images].every(i => i.complete && i.naturalWidth > 0)), 'keuzescherm: alle plaatjes geladen');
   ok(await p.evaluate(() => document.querySelector('.game.andy').getAttribute('href') === '../appel' && document.querySelector('.game.flappel').getAttribute('href') === '../flappel'), 'keuzescherm: links naar /appel en /flappel');
+  ok(await p.evaluate(() => document.querySelector('.game.bke').href === 'https://florisbroek.nl/bke.html' && document.querySelector('.game.shooter').href === 'https://florisbroek.nl/appel.html'), 'keuzescherm: links naar Boter, Kiwi en Appels en Appel Shooter');
+  ok(await p.evaluate(() => [...document.querySelectorAll('.art canvas')].every(c => c.width > 0)), 'keuzescherm: animaties draaien');
   await p.click('.game.flappel', { force: true });
   await p.waitForURL(/\/flappel\/?$/, { timeout: 5000 }).catch(() => {});
   ok(/\/flappel\/?$/.test(p.url()), 'keuzescherm: klik op Flappel opent /flappel');

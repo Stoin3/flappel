@@ -7,7 +7,7 @@ Twee losse onderdelen voor **stijnbarendse.nl**:
 | Map | Wat | Online adres |
 | --- | --- | --- |
 | [`flappel/`](flappel/) | **Flappel**: Flappy Bird, maar dan een appel die tussen **kiwibuizen** door fladdert | `stijnbarendse.nl/flappel` |
-| [`game/`](game/) | **Keuzescherm**: kies tussen Andy Apples en Flappel | `stijnbarendse.nl/game` |
+| [`game/`](game/) | **Keuzescherm**: kies tussen Andy Apples, Flappel, Boter, Kiwi en Appels, en Appel Shooter | `stijnbarendse.nl/game` |
 
 Alles (graphics, muziek en geluid) wordt in code gemaakt. Geen build-stap, geen npm, geen installatie.
 
@@ -106,7 +106,7 @@ Voor de bevestigingsmail bij een nieuw account vanuit Flappel: zet `https://stij
 
 ## Keuzescherm
 
-`game/index.html` is één bestand met de plaatjes in `game/img/`. Twee grote kaarten (Andy Apples en Flappel) met wisselende spelbeelden, 3D-kanteling, een glans en een flits bij het kiezen, op een achtergrond met zwevend fruit. Ben je al ingelogd of heb je al een record, dan staat dat erbij (gelezen uit dezelfde opslag als de games). Toetsen `1` en `2` kiezen ook. De beelden van Andy Apples komen uit `art/` van de Andy Apples-repo.
+`game/index.html` is één bestand met de plaatjes in `game/img/`. Vier grote kaarten: Andy Apples (`../appel`), Flappel (`../flappel`), Boter, Kiwi en Appels (`https://florisbroek.nl/bke.html`) en Appel Shooter (`https://florisbroek.nl/appel.html`). Andy Apples en Flappel tonen wisselende spelbeelden; alle kaarten kantelen in 3D, glanzen en geven een flits bij het kiezen, op een achtergrond met zwevend fruit. Ben je al ingelogd of heb je al een record, dan staat dat erbij (gelezen uit dezelfde opslag als de games). De kaarten van Boter, Kiwi en Appels en Appel Shooter hebben geen spelbeelden maar een animatie die live op een canvas wordt getekend: een potje met boter-, kiwi- en appelstukken dat zichzelf speelt (met een gloeiende winstlijn), en een vizier dat vliegende appels kapotschiet (met combo's en gouden appels). Ze draaien alleen als de kaart in beeld is, en gaan sneller als je erboven hangt. Toetsen `1` t/m `4` kiezen ook. De beelden van Andy Apples komen uit `art/` van de Andy Apples-repo.
 
 ## Licentie
 
